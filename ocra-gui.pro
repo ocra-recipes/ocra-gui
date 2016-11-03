@@ -14,10 +14,19 @@ TEMPLATE = app
 
 SOURCES += main.cpp\
         mainwindow.cpp \
-    taskwidget.cpp
+    taskwidget.cpp \
+    gazebotools.cpp \
+    physicstools.cpp \
+    yarptools.cpp \
+    connectionmonitor.cpp
 
 HEADERS  += mainwindow.h \
-    taskwidget.h
+    taskwidget.h \
+    gazebotools.h \
+    messagetypes.h \
+    yarptools.h \
+    physicstools.h \
+    connectionmonitor.h
 
 FORMS    += mainwindow.ui \
     taskwidget.ui

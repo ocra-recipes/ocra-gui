@@ -46,7 +46,17 @@ endif()
 
 
 # qt5_add_resources(RESOURCE_ADDED resources.qrc)
-add_executable(${PROJECT_NAME} main.cpp mainwindow.cpp taskwidget.cpp ${RESOURCE_ADDED} ${UI_FORMS})
+add_executable(${PROJECT_NAME}
+    main.cpp
+    mainwindow.cpp
+    taskwidget.cpp
+    gazebotools.cpp
+    physicstools.cpp
+    yarptools.cpp
+    connectionmonitor.cpp
+    ${RESOURCE_ADDED}
+    ${UI_FORMS}
+    )
 target_link_libraries(${PROJECT_NAME}
 Qt5::Core
 Qt5::Gui
