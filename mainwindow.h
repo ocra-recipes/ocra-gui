@@ -12,7 +12,7 @@
 #include "messagetypes.h"
 #include "yarptools.h"
 #include "connectionmonitor.h"
-
+#include <cstdlib>
 
 namespace Ui {
 class MainWindow;
@@ -46,12 +46,11 @@ public slots:
     void openClientCommunications();
     void getTaskList();
     void disconnectGui();
+    void on_yarpCleanButton_clicked();
 signals:
     void controllerConnected();
     void controllerDisconnected();
 
-private slots:
-    void on_clearInfoButton_clicked();
 
 private:
     Ui::MainWindow *ui;

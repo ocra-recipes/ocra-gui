@@ -12,7 +12,7 @@ TaskWidget::TaskWidget(const std::string& name, QWidget *parent)
 {
     ui->setupUi(this);
     taskCon = std::make_shared<ocra_recipes::TaskConnection>(m_name);
-    taskCon->openControlPorts();
+    taskCon->openControlPorts(false);
     m_type = taskCon->getTaskTypeAsString();
     ui->taskTypeLabel->setText(m_type.c_str());
     ui->taskNameLabel->setText(m_name.c_str());
@@ -89,6 +89,9 @@ TaskWidget::TaskWidget(const std::string& name, QWidget *parent)
 
 TaskWidget::~TaskWidget()
 {
+    if (ui->gazeboButton->isChecked()) {
+        emit removeGazeboFrames(m_name);
+    }
     framePortOut.close();
     targetPortOut.close();
     taskStateInPort.close();
@@ -102,8 +105,9 @@ TaskWidget::~TaskWidget()
 
 void TaskWidget::connectPorts()
 {
+    emit showUserMessage("Connecting task widget ports for task: " + m_name, INFO);
     taskCon->reconnect();
-    taskCon->openControlPorts();
+    taskCon->openControlPorts(false);
     bool allConnected = true;
     if (ui->gazeboButton->isChecked()) {
         allConnected &= connectToGazebo();
@@ -119,6 +123,10 @@ void TaskWidget::connectPorts()
 
 void TaskWidget::disconnectPorts()
 {
+    taskCon->disconnect();
+    yarp.disconnect(taskStatePortOutName, taskStatePortInName);
+    yarp.disconnect(taskDesiredStatePortOutName, taskDesiredStatePortInName);
+    emit showUserMessage("Disconnecting task widget ports for task: " + m_name, INFO);
     m_currentStatePortReadTimer->stop();
     m_desiredStatePortReadTimer->stop();
 }

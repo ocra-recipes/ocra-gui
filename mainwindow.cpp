@@ -73,11 +73,9 @@ void MainWindow::toggleTaskWidget(int buttonIndex)
 {
     int id = buttonIndexToTaskIndex(buttonIndex);
     std::string name = m_taskList[id];
-    for (auto n : m_taskWidgetMap) {
-        if (n.first == name) {
-            removeTaskWidget(name);
-            return;
-        }
+    if (m_taskWidgetMap.find(name) != m_taskWidgetMap.end()) {
+        removeTaskWidget(name);
+        return;
     }
     addTaskWidget(name);
 }
@@ -90,7 +88,7 @@ void MainWindow::addTaskWidget(const std::string& name)
     connect(task, SIGNAL(showUserMessage(std::string,MESSAGE_TYPE)), this, SLOT(showMessage(std::string,MESSAGE_TYPE)) );
 
 //    connect(this, SIGNAL(controllerConnected()), task, SLOT(connectPorts()));
-//    connect(this, SIGNAL(controllerDisconnected()), task, SLOT(disconnectPorts()));
+    connect(this, SIGNAL(controllerDisconnected()), task, SLOT(disconnectPorts()));
 
     ui->taskWidgetLayout->addWidget(task, currentTaskGridRowIndex, currentTaskGridColIndex, 1, 1);
     ++currentTaskGridColIndex;
@@ -103,7 +101,13 @@ void MainWindow::addTaskWidget(const std::string& name)
 
 void MainWindow::removeTaskWidget(const std::string &name)
 {
-    //
+    delete m_taskWidgetMap[name];
+    m_taskWidgetMap.erase(name);
+    --currentTaskGridColIndex;
+    if (currentTaskGridColIndex<0) {
+        --currentTaskGridRowIndex;
+        currentTaskGridColIndex = 0;
+    }
 }
 
 void MainWindow::getTaskList()
@@ -153,7 +157,20 @@ void MainWindow::populateTasks(const std::vector<std::string>& taskNames)
 
 void MainWindow::reconnectTasks()
 {
-
+    int i=0;
+    for (auto b : m_taskButtons->buttons()) {
+        if (m_taskTypes[i]!="point_contact") {
+            b->setEnabled(true);
+        }
+        ++i;
+    }
+    for (auto t : m_taskWidgetMap) {
+        t.second->setEnabled(true);
+    }
+    showInfo("Reconnecting task widgets");
+    for (auto t : m_taskWidgetMap) {
+        t.second->connectPorts();
+    }
 }
 
 void MainWindow::openClientCommunications()
@@ -171,6 +188,12 @@ void MainWindow::openClientCommunications()
 
 void MainWindow::disconnectGui()
 {
+    for (auto b : m_taskButtons->buttons()) {
+        b->setEnabled(false);
+    }
+    for (auto t : m_taskWidgetMap) {
+        t.second->setEnabled(false);
+    }
     ui->connectionStatusLabel->setText("Controller Disconnected");
     showInfo("No controller server running");
     emit controllerDisconnected();
@@ -194,7 +217,7 @@ void MainWindow::showError(const std::string& message)
     ui->userInformation->append(msg.c_str());
 }
 
-void MainWindow::on_clearInfoButton_clicked()
+void MainWindow::on_yarpCleanButton_clicked()
 {
-    ui->userInformation->clear();
+    std::system("yarp clean --timeout 0.01");
 }
