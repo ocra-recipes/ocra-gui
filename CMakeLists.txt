@@ -63,9 +63,9 @@ set(Forms
     taskwidget.ui
     )
 
-# qt5_add_resources(Resources
-#    resources.qrc
-#)
+ qt5_add_resources(Resources
+    resources.qrc
+)
 
 
 
@@ -79,7 +79,7 @@ add_executable(${PROJECT_NAME}
     ${Sources}
     ${Headers}
     ${Forms}
-#    ${Resources}
+    ${Resources}
     )
 
 target_link_libraries(${PROJECT_NAME}
