@@ -23,9 +23,9 @@ void GazeboTools::addTaskFrames(const std::string& taskName)
         request.addString(taskName);
         m_port.write(request, reply);
         if(reply.get(0).asBool()){
-            emit showUserMessage("Successfully added frames for task: "+taskName+".", INFO);
+            emit showUserMessage(reply.get(1).asString(), INFO);
         } else {
-            emit showUserMessage("FAILED to add frames for task: "+taskName+".", ERROR);
+            emit showUserMessage(reply.get(1).asString(), ERROR);
         }
     } else {
         emit showUserMessage("Not connected to Gazebo.", ERROR);
@@ -34,5 +34,17 @@ void GazeboTools::addTaskFrames(const std::string& taskName)
 
 void GazeboTools::removeTaskFrames(const std::string& taskName)
 {
-
+    if(conMon->isConnected()) {
+        yarp::os::Bottle request, reply;
+        request.addString("removeTaskFrames");
+        request.addString(taskName);
+        m_port.write(request, reply);
+        if(reply.get(0).asBool()){
+            emit showUserMessage(reply.get(1).asString(), INFO);
+        } else {
+            emit showUserMessage(reply.get(1).asString(), ERROR);
+        }
+    } else {
+        emit showUserMessage("Not connected to Gazebo.", ERROR);
+    }
 }
