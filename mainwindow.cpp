@@ -6,13 +6,15 @@ MainWindow::MainWindow(QWidget *parent)
 : QMainWindow(parent)
 , ui(new Ui::MainWindow)
 , taskWidgetGridRows(10)
-, taskWidgetGridCols(4)
 , taskWidgetGridCols(3)
 , currentTaskGridRowIndex(0)
 , currentTaskGridColIndex(0)
 {
     ui->setupUi(this);
     setWindowIcon(QIcon(":/images/app_icon.png"));
+
+    connect(ui->clearInfoButton, SIGNAL(clicked()), ui->userInformation, SLOT(clear()));
+
     m_controllerServerRpcName = "/ControllerServer/rpc:i";
     m_guiRpcClientName = "/OcraGui/Controller/rpc:o";
     m_port.open(m_guiRpcClientName);
