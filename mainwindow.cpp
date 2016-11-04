@@ -11,6 +11,7 @@ MainWindow::MainWindow(QWidget *parent)
 , currentTaskGridColIndex(0)
 {
     ui->setupUi(this);
+    setWindowIcon(QIcon(":/images/app_icon.png"));
     m_controllerServerRpcName = "/ControllerServer/rpc:i";
     m_guiRpcClientName = "/OcraGui/Controller/rpc:o";
     m_port.open(m_guiRpcClientName);
