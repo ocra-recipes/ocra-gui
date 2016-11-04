@@ -19,34 +19,27 @@ find_package(Qt5Widgets REQUIRED)
 find_package(Qt5Core REQUIRED)
 find_package(Qt5Gui REQUIRED)
 find_package(YARP REQUIRED)
-find_package(gazebo REQUIRED)
+#find_package(gazebo REQUIRED)
 find_package(OcraIcub REQUIRED)
 IF(${OcraIcub_FOUND})
     message("-- Found OcraIcub version ${OcraIcub_VERSION}")
 ENDIF()
 
 include_directories(
-    ${CMAKE_CURRENT_SOURCE_DIR}
-    ${GAZEBO_INCLUDE_DIRS}
+#    ${GAZEBO_INCLUDE_DIRS}
     ${YARP_INCLUDE_DIRS}
     ${OcraIcub_INCLUDE_DIRS}
                     )
 
-link_directories(${GAZEBO_LIBRARY_DIRS}
+link_directories(
+#                ${GAZEBO_LIBRARY_DIRS}
                 ${YARP_LIBRARY_DIRS}
                 )
 
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${GAZEBO_CXX_FLAGS}")
+#set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${GAZEBO_CXX_FLAGS}")
 
 
-if(${CMAKE_VERSION} VERSION_LESS 3.0.2)
-	message("-- Using cmake < 3.0.2, must wrap ui using QT5_WRAP_UI")
-	QT5_WRAP_UI(UI_FORMS mainwindow.ui taskwidget.ui)
-endif()
-
-
-# qt5_add_resources(RESOURCE_ADDED resources.qrc)
-add_executable(${PROJECT_NAME}
+set(Sources
     main.cpp
     mainwindow.cpp
     taskwidget.cpp
@@ -54,16 +47,48 @@ add_executable(${PROJECT_NAME}
     physicstools.cpp
     yarptools.cpp
     connectionmonitor.cpp
-    ${RESOURCE_ADDED}
-    ${UI_FORMS}
     )
+
+set(Headers
+    mainwindow.h
+    taskwidget.h
+    gazebotools.h
+    physicstools.h
+    yarptools.h
+    connectionmonitor.h
+    )
+
+set(Forms
+    mainwindow.ui
+    taskwidget.ui
+    )
+
+# qt5_add_resources(Resources
+#    resources.qrc
+#)
+
+
+
+if(${CMAKE_VERSION} VERSION_LESS 3.0.2)
+	message("-- Using cmake < 3.0.2, must wrap ui using QT5_WRAP_UI")
+        QT5_WRAP_UI(UI_FORMS ${Forms})
+endif()
+
+
+add_executable(${PROJECT_NAME}
+    ${Sources}
+    ${Headers}
+    ${Forms}
+#    ${Resources}
+    )
+
 target_link_libraries(${PROJECT_NAME}
 Qt5::Core
 Qt5::Gui
 Qt5::Widgets
 ${YARP_LIBRARIES}
-${GAZEBO_LIBRARIES}
-${Boost_LIBRARIES}
+#${GAZEBO_LIBRARIES}
+#${Boost_LIBRARIES}
 ${OcraIcub_LIBRARIES}
 )
 

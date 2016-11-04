@@ -75,7 +75,7 @@ private:
 
     std::vector<std::string> m_taskList;
     std::vector<std::string> m_taskTypes;
-    std::vector<std::string> m_currentTaskWidgetList;
+    std::map<std::string, TaskWidget*> m_taskWidgetMap;
 
     std::string m_controllerServerRpcName;
     std::string m_guiRpcClientName;

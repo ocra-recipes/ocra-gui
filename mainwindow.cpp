@@ -69,8 +69,8 @@ void MainWindow::toggleTaskWidget(int buttonIndex)
 {
     int id = buttonIndexToTaskIndex(buttonIndex);
     std::string name = m_taskList[id];
-    for (auto n : m_currentTaskWidgetList) {
-        if (n == name) {
+    for (auto n : m_taskWidgetMap) {
+        if (n.first == name) {
             removeTaskWidget(name);
             return;
         }
@@ -94,7 +94,7 @@ void MainWindow::addTaskWidget(const std::string& name)
         ++currentTaskGridRowIndex;
         currentTaskGridColIndex = 0;
     }
-    m_currentTaskWidgetList.push_back(name);
+    m_taskWidgetMap[name] = task;
 }
 
 void MainWindow::removeTaskWidget(const std::string &name)
