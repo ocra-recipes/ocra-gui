@@ -7,6 +7,7 @@ MainWindow::MainWindow(QWidget *parent)
 , ui(new Ui::MainWindow)
 , taskWidgetGridRows(10)
 , taskWidgetGridCols(4)
+, taskWidgetGridCols(3)
 , currentTaskGridRowIndex(0)
 , currentTaskGridColIndex(0)
 {
