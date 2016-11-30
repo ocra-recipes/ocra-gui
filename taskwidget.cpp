@@ -9,6 +9,7 @@ TaskWidget::TaskWidget(const std::string& name, QWidget *parent)
 , m_level(-1)
 , m_kp(0.0)
 , m_kd(0.0)
+, currentlyEditing(false)
 {
     ui->setupUi(this);
     taskCon = std::make_shared<ocra_recipes::TaskConnection>(m_name);
@@ -88,6 +89,33 @@ TaskWidget::TaskWidget(const std::string& name, QWidget *parent)
 
     connectPorts();
 
+    connect(ui->desiredStateLineEdit, SIGNAL(cursorPositionChanged(int,int)), this, SLOT(disconnectDesiredStateInput()));
+    connect(ui->desiredStateLineEdit, SIGNAL(editingFinished()), this, SLOT(sendAndReconnectDesiredStateInput()));
+}
+
+void TaskWidget::disconnectDesiredStateInput()
+{
+    if(!currentlyEditing) {
+        disconnect(this, SIGNAL(desiredStateUpdated()), this, SLOT(updateDesiredState()));
+        currentlyEditing = true;
+    }
+}
+
+void TaskWidget::sendAndReconnectDesiredStateInput()
+{
+    Eigen::VectorXd desVec = ocra::util::stringToVectorXd(ui->desiredStateLineEdit->text().toStdString().c_str());
+    Eigen::Displacementd dispCurrent = desiredState.getPosition();
+
+    dispCurrent.x() = desVec(0);
+    dispCurrent.y() = desVec(1);
+    dispCurrent.z() = desVec(2);
+
+    ocra::TaskState newState;
+    newState.setPosition(dispCurrent);
+
+    taskCon->setDesiredTaskState(newState);
+    connect(this, SIGNAL(desiredStateUpdated()), this, SLOT(updateDesiredState()));
+    currentlyEditing = false;
 }
 
 TaskWidget::~TaskWidget()

@@ -34,6 +34,8 @@ public slots:
     void connectPorts();
     void disconnectPorts();
 
+    void disconnectDesiredStateInput();
+    void sendAndReconnectDesiredStateInput();
 private slots:
     void on_activateButton_clicked(bool checked);
 
@@ -69,7 +71,7 @@ private:
     Ui::TaskWidget *ui;
     ocra_recipes::TaskConnection::Ptr taskCon;
 
-
+    bool currentlyEditing;
     std::string m_name;
     std::string m_type;
     double m_weight;
