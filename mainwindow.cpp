@@ -86,6 +86,8 @@ void MainWindow::addTaskWidget(const std::string& name)
     connect(task, SIGNAL(addGazeboFrames(std::string)), m_gazeboTools, SLOT(addTaskFrames(std::string)));
     connect(task, SIGNAL(removeGazeboFrames(std::string)), m_gazeboTools, SLOT(removeTaskFrames(std::string)));
     connect(task, SIGNAL(showUserMessage(std::string,MESSAGE_TYPE)), this, SLOT(showMessage(std::string,MESSAGE_TYPE)) );
+    connect( task, SIGNAL(getRobotWorldPose()), m_gazeboTools, SLOT(sendRobotWorldPose()) );
+    connect(m_gazeboTools, SIGNAL(newRobotWorldPose(Eigen::Displacementd)), task, SLOT(changeGazeboOffset(Eigen::Displacementd)) );
 
 //    connect(this, SIGNAL(controllerConnected()), task, SLOT(connectPorts()));
     connect(this, SIGNAL(controllerDisconnected()), task, SLOT(disconnectPorts()));

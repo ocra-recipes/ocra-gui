@@ -5,6 +5,7 @@
 #include <QTimer>
 #include <ocra-recipes/TaskConnection.h>
 #include <ocra/control/TaskState.h>
+#include <ocra/util/StringUtilities.h>
 #include <yarp/os/all.h>
 #include "messagetypes.h"
 #include "yarptools.h"
@@ -27,6 +28,7 @@ public:
 
     QString poseToString(const std::vector<double> &poseVector);
     bool connectToGazebo();
+    QString displacementToString(const Eigen::Displacementd &disp);
 public slots:
     void updateCurrentState();
     void updateDesiredState();
@@ -36,6 +38,7 @@ public slots:
 
     void disconnectDesiredStateInput();
     void sendAndReconnectDesiredStateInput();
+    void changeGazeboOffset(const Eigen::Displacementd &newOffset);
 private slots:
     void on_activateButton_clicked(bool checked);
 
@@ -66,6 +69,7 @@ signals:
     void currentStateUpdated();
     void desiredStateUpdated();
     void showUserMessage(const std::string& msg, MESSAGE_TYPE type);
+    void getRobotWorldPose();
 
 private:
     Ui::TaskWidget *ui;
@@ -113,6 +117,9 @@ private:
     yarp::os::Bottle targetOutputBottle;
     std::vector<double> targetPose;
 
+    Eigen::Displacementd gazeboCurrentStateDisp;
+    Eigen::Displacementd gazeboDesiredStateDisp;
+    Eigen::Displacementd gazeboOffset;
 
 };
 

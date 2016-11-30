@@ -186,7 +186,9 @@ void TaskWidget::updateCurrentState()
             displacementToXYZRPY(currentState.getPosition(), framePose);
         }
 
-        ui->currentStateLineEdit->setText(poseToString(framePose));
+//        ui->currentStateLineEdit->setText(poseToString(framePose));
+        ui->currentStateLineEdit->setText(displacementToString(currentState.getPosition()));
+
     }
 }
 
@@ -207,7 +209,8 @@ void TaskWidget::updateDesiredState()
             displacementToXYZRPY(desiredState.getPosition(), targetPose);
         }
 
-        ui->desiredStateLineEdit->setText(poseToString(targetPose));
+//        ui->desiredStateLineEdit->setText(poseToString(targetPose));
+        ui->desiredStateLineEdit->setText(displacementToString(desiredState.getPosition()));
     }
 }
 
@@ -219,6 +222,26 @@ QString TaskWidget::poseToString(const std::vector<double>& poseVector)
         s.append(QString::number(i, 'g', 3));
         s.append(" ");
     }
+    return s;
+}
+
+QString TaskWidget::displacementToString(const Eigen::Displacementd& disp)
+{
+    QString s("");
+    s.append(QString::number(disp.x(), 'g', 3));
+    s.append(" ");
+    s.append(QString::number(disp.y(), 'g', 3));
+    s.append(" ");
+    s.append(QString::number(disp.z(), 'g', 3));
+    s.append(" ");
+    s.append(QString::number(disp.qw(), 'g', 3));
+    s.append(" ");
+    s.append(QString::number(disp.qx(), 'g', 3));
+    s.append(" ");
+    s.append(QString::number(disp.qy(), 'g', 3));
+    s.append(" ");
+    s.append(QString::number(disp.qz(), 'g', 3));
+    s.append(" ");
     return s;
 }
 
@@ -245,6 +268,7 @@ void TaskWidget::on_deactivateButton_clicked(bool checked)
 void TaskWidget::on_gazeboButton_clicked(bool checked)
 {
     if (checked) {
+        emit getRobotWorldPose();
         emit addGazeboFrames(m_name);
         if(!connectToGazebo()) {
             ui->gazeboButton->setChecked(false);
@@ -267,14 +291,45 @@ void TaskWidget::sendPosesToGazebo()
     frameOutputBottle.clear();
     targetOutputBottle.clear();
 
-    displacementToXYZRPY(currentState.getPosition(), framePose);
-    displacementToXYZRPY(desiredState.getPosition(), targetPose);
+    gazeboCurrentStateDisp.getTranslation() = currentState.getPosition().getTranslation() + gazeboOffset.getTranslation();
+    gazeboDesiredStateDisp.getTranslation() = desiredState.getPosition().getTranslation() + gazeboOffset.getTranslation();
 
-    for (auto i=0; i<framePose.size(); ++i) {
-        frameOutputBottle.addDouble(framePose[i]);
-        targetOutputBottle.addDouble(targetPose[i]);
+//    gazeboCurrentStateDisp.getRotation() = gazeboOffset.getRotation().inverse() * currentState.getPosition().getRotation();
+//    gazeboDesiredStateDisp.getRotation() = gazeboOffset.getRotation().inverse() * desiredState.getPosition().getRotation();
 
-    }
+
+//    gazeboCurrentStateDisp = gazeboOffset * currentState.getPosition();
+//    gazeboDesiredStateDisp = gazeboOffset * desiredState.getPosition();
+
+    frameOutputBottle.addDouble(gazeboCurrentStateDisp.x());
+    frameOutputBottle.addDouble(gazeboCurrentStateDisp.y());
+    frameOutputBottle.addDouble(gazeboCurrentStateDisp.z());
+    frameOutputBottle.addDouble(gazeboCurrentStateDisp.qw());
+    frameOutputBottle.addDouble(gazeboCurrentStateDisp.qx());
+    frameOutputBottle.addDouble(gazeboCurrentStateDisp.qy());
+    frameOutputBottle.addDouble(gazeboCurrentStateDisp.qz());
+
+    targetOutputBottle.addDouble(gazeboDesiredStateDisp.x());
+    targetOutputBottle.addDouble(gazeboDesiredStateDisp.y());
+    targetOutputBottle.addDouble(gazeboDesiredStateDisp.z());
+    targetOutputBottle.addDouble(gazeboDesiredStateDisp.qw());
+    targetOutputBottle.addDouble(gazeboDesiredStateDisp.qx());
+    targetOutputBottle.addDouble(gazeboDesiredStateDisp.qy());
+    targetOutputBottle.addDouble(gazeboDesiredStateDisp.qz());
+
+
+//    displacementToXYZRPY(currentState.getPosition(), framePose);
+//    displacementToXYZRPY(desiredState.getPosition(), targetPose);
+
+
+
+//    std::vector<double> gazeboOffset({0.0, 0.068, 0.0, 0.0, 0.0, 0.0});
+
+//    for (auto i=0; i<framePose.size(); ++i) {
+//        frameOutputBottle.addDouble(framePose[i] + gazeboOffset[i]);
+//        targetOutputBottle.addDouble(targetPose[i] + gazeboOffset[i]);
+
+//    }
     framePortOut.write(frameOutputBottle);
     targetPortOut.write(targetOutputBottle);
 
@@ -341,7 +396,6 @@ void TaskWidget::readCurrentStatePort()
         currentStateBottle->clear();
         emit currentStateUpdated();
     }
-
 }
 
 void TaskWidget::readDesiredStatePort()
@@ -353,5 +407,10 @@ void TaskWidget::readDesiredStatePort()
         desiredStateBottle->clear();
         emit desiredStateUpdated();
     }
+}
 
+void TaskWidget::changeGazeboOffset(const Eigen::Displacementd& newOffset)
+{
+    gazeboOffset = newOffset;
+    gazeboOffset.z() = 0.0;
 }
