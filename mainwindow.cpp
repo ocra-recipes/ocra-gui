@@ -147,9 +147,9 @@ void MainWindow::populateTasks(const std::vector<std::string>& taskNames)
     for (auto i=0; i<m_taskList.size(); ++i) {
         auto name = m_taskList[i];
         QPushButton* btn = new QPushButton(name.c_str());
-        if (m_taskTypes[i]=="point_contact") {
-            btn->setEnabled(false);
-        }
+//        if (m_taskTypes[i]=="point_contact") {
+//            btn->setEnabled(false);
+//        }
         ui->taskButtonLayout->addWidget(btn);
         m_taskButtons->addButton(btn);
     }

@@ -22,7 +22,8 @@ TaskWidget::TaskWidget(const std::string& name, QWidget *parent)
            (m_type=="orientation"   ) ||
            (m_type=="pose"          ) ||
            (m_type=="force"         ) ||
-           (m_type=="com"           )
+           (m_type=="com"           ) ||
+           (m_type=="point_contact" )
           )
         )
     {
@@ -37,8 +38,11 @@ TaskWidget::TaskWidget(const std::string& name, QWidget *parent)
         ui->levelLineEdit->setEnabled(false);
         ui->kpLineEdit->setEnabled(false);
         ui->kdLineEdit->setEnabled(false);
-        ui->currentStateLineEdit->setEnabled(false);
+        if (m_type=="unknown"   ) {
+            ui->currentStateLineEdit->setEnabled(false);
+        }
         ui->desiredStateLineEdit->setEnabled(false);
+
     }
 
     if (taskCon->isActivated()) {
@@ -67,7 +71,6 @@ TaskWidget::TaskWidget(const std::string& name, QWidget *parent)
     targetPortOut.open(targetPortOutName);
     taskStateInPort.open(taskStatePortInName);
     taskDesiredStateInPort.open(taskDesiredStatePortInName);
-
 
 
 
@@ -145,7 +148,8 @@ void TaskWidget::updateCurrentState()
            (m_type=="orientation"   ) ||
            (m_type=="pose"          ) ||
            (m_type=="force"         ) ||
-           (m_type=="com"           )
+           (m_type=="com"           ) ||
+           (m_type=="point_contact" )
        )
     {
         if (ui->gazeboButton->isChecked()) {
@@ -165,7 +169,8 @@ void TaskWidget::updateDesiredState()
            (m_type=="orientation"   ) ||
            (m_type=="pose"          ) ||
            (m_type=="force"         ) ||
-           (m_type=="com"           )
+           (m_type=="com"           ) ||
+           (m_type=="point_contact" )
        )
     {
         if (ui->gazeboButton->isChecked()) {
