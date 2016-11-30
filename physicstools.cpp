@@ -29,7 +29,7 @@ void displacementToXYZRPY(const Eigen::Displacementd& disp, std::vector<double>&
 {
     v.resize(6);
     v[0] = disp.x();
-    v[1] = disp.y() + 0.068;
+    v[1] = disp.y();
     v[2] = disp.z();
     double roll = 0.0;
     double pitch = 0.0;
