@@ -313,9 +313,12 @@ void TaskWidget::on_kpLineEdit_editingFinished()
     double kp = ui->kpLineEdit->text().toDouble(&ok);
     if (ok) {
         taskCon->setStiffness(kp);
+        taskCon->setDamping(2.0*std::sqrt(kp));
         m_kp = taskCon->getStiffness();
+        m_kd = taskCon->getDamping();
     }
     ui->kpLineEdit->setText(QString::number(m_kp));
+    ui->kdLineEdit->setText(QString::number(m_kd));
 }
 
 void TaskWidget::on_kdLineEdit_editingFinished()
