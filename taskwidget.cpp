@@ -291,15 +291,9 @@ void TaskWidget::sendPosesToGazebo()
     frameOutputBottle.clear();
     targetOutputBottle.clear();
 
-    gazeboCurrentStateDisp.getTranslation() = currentState.getPosition().getTranslation() + gazeboOffset.getTranslation();
-    gazeboDesiredStateDisp.getTranslation() = desiredState.getPosition().getTranslation() + gazeboOffset.getTranslation();
-
-//    gazeboCurrentStateDisp.getRotation() = gazeboOffset.getRotation().inverse() * currentState.getPosition().getRotation();
-//    gazeboDesiredStateDisp.getRotation() = gazeboOffset.getRotation().inverse() * desiredState.getPosition().getRotation();
-
-
-//    gazeboCurrentStateDisp = gazeboOffset * currentState.getPosition();
-//    gazeboDesiredStateDisp = gazeboOffset * desiredState.getPosition();
+    Eigen::Displacementd l_solePose(0.0, 0.0, 0.004, 0.0, -1.0, 0.0, 0.0);
+    gazeboCurrentStateDisp = gazeboOffset * l_solePose * currentState.getPosition();
+    gazeboDesiredStateDisp = gazeboOffset * l_solePose * desiredState.getPosition();
 
     frameOutputBottle.addDouble(gazeboCurrentStateDisp.x());
     frameOutputBottle.addDouble(gazeboCurrentStateDisp.y());
@@ -317,19 +311,6 @@ void TaskWidget::sendPosesToGazebo()
     targetOutputBottle.addDouble(gazeboDesiredStateDisp.qy());
     targetOutputBottle.addDouble(gazeboDesiredStateDisp.qz());
 
-
-//    displacementToXYZRPY(currentState.getPosition(), framePose);
-//    displacementToXYZRPY(desiredState.getPosition(), targetPose);
-
-
-
-//    std::vector<double> gazeboOffset({0.0, 0.068, 0.0, 0.0, 0.0, 0.0});
-
-//    for (auto i=0; i<framePose.size(); ++i) {
-//        frameOutputBottle.addDouble(framePose[i] + gazeboOffset[i]);
-//        targetOutputBottle.addDouble(targetPose[i] + gazeboOffset[i]);
-
-//    }
     framePortOut.write(frameOutputBottle);
     targetPortOut.write(targetOutputBottle);
 
@@ -412,5 +393,4 @@ void TaskWidget::readDesiredStatePort()
 void TaskWidget::changeGazeboOffset(const Eigen::Displacementd& newOffset)
 {
     gazeboOffset = newOffset;
-    gazeboOffset.z() = 0.0;
 }
